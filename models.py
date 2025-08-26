@@ -43,7 +43,7 @@ class Order(Base):
     user_id = Column(UUIDType(binary=False), ForeignKey('users.id'))
     product_id = Column(UUIDType(binary=False), ForeignKey('products.id'))
     quantity = Column(Integer, nullable=False)
-    status = Column(ChoiceType(ORDER_STATUS), default=ORDER_STATUS[0][0])
+    status = Column(ChoiceType(choices=ORDER_STATUS), default=ORDER_STATUS[0][0])
 
     user = relationship('User', back_populates='orders') # many-to-one relationship
     product = relationship('Product', back_populates='orders') # many-to-one relationship

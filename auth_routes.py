@@ -14,27 +14,9 @@ session = session(bind=engine)
 access_lifetime = datetime.timedelta(minutes=60)
 refresh_lifetime = datetime.timedelta(days=1)
 
-auth_router = APIRouter(
-    prefix="/auth",
-    tags=["auth"],
-)
+auth_router = APIRouter(prefix="/auth", tags=["AUTH"])
 
-@auth_router.get("/status")
-async def test_status(Authorize: AuthJWT = Depends()):
-    try:
-        Authorize.jwt_required()
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={"status": "ok"}
-        )
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated"
-        )
-
-@auth_router.post("/signup", status_code=status.HTTP_201_CREATED, dependencies=[])
+@auth_router.post("/sign-up", status_code=status.HTTP_201_CREATED)
 async def signup(user: SignUpModel, Authorize: AuthJWT = Depends()):
     db_email = session.query(User).filter(User.email == user.email).first()
     if db_email is not None:
@@ -71,9 +53,8 @@ async def signup(user: SignUpModel, Authorize: AuthJWT = Depends()):
         content={"access_token": access_token, "refresh_token": refresh_token}
     )
 
-@auth_router.post("/signin", status_code=status.HTTP_200_OK)
+@auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
 async def signin(user: SigninModel, Authorize: AuthJWT = Depends()):
-    # db_user = session.query(User).filter(User.username == user.username).first()
     db_user = session.query(User).filter(
         or_(
             User.username == user.username_or_email,

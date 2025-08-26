@@ -11,3 +11,9 @@ pkg_update:
 
 pkg_install:
 	pip install -r requirements.txt
+
+compose-up:
+	@docker compose up -d
+
+compose-down:
+	@docker compose down
